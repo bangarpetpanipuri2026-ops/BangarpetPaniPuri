@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bangarpet PaniPuri — authentic Bangarpet-style pani puri, chaat and Indian street-food flavours in New Zealand.">
+  <meta name="theme-color" content="#173126">
+  <title>Bangarpet PaniPuri | Bangarpet Chats</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="grandOpening" class="grand-opening">
+    <video
+        id="grandOpeningVideo"
+        autoplay
+        muted
+        playsinline
+        preload="auto"
+    >
+        <source src="/photos/grand-opening.mp4" type="video/mp4">
+    </video>
+</div>
+  <header class="site-header" id="top">
+    <div class="container nav-wrap">
+      <a class="brand" href="#top" aria-label="Bangarpet PaniPurii home">
+        <img class="brand-mark" src="./photos/logo.png" alt="Bangarpet PaniPurii logo">
+        <span>Bangarpet PaniPuri</span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Open menu</span>
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
+        <a href="#menu">Menu</a>
+        <a href="#story">Our Story</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="whatsapp-link" href="https://wa.me/+642040015331" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a class="call-link" href="tel:+642040015331">Call</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <video class="hero-video" autoplay muted loop playsinline poster="./photos/bg.png" aria-hidden="true">
+        <source src="./photos/video.mp4" type="video/mp4">
+      </video>
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <p class="eyebrow light hero-anim" style="--delay:0s">Artisanal Bites · New Zealand</p>
+        <h1 id="hero-title" class="hero-anim" style="--delay:.25s">Crisp. Golden.Filled the moment you order. <br><em>One Bite, Endless Memories.</em></h1>
+        <p class="hero-copy hero-anim" style="--delay:.55s">Every puri is filled to order. Every pani is made fresh, crystal-clear and bursting with flavor. This isn't fast food — it's street food, done properly.</p>
+        <div class="hero-actions hero-anim" style="--delay:.8s">
+          <a class="btn btn-primary" href="#menu">Explore the menu</a>
+          <a class="btn btn-light" href="https://wa.me/+642040015331?text=Hi%20Bangarpet%20PaniPuri%2C%20I%20would%20like%20to%20know%20more." target="_blank" rel="noopener noreferrer">Message us</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="intro-strip">
+      <div class="container intro-grid">
+        <p><strong>Freshly prepared</strong><span>Every puri is filled with care.</span></p>
+        <p><strong>Bangarpet flavours</strong><span>Street-food traditions, proudly shared.</span></p>
+        <p><strong>Made for gathering</strong><span>Perfect for cravings, parties and events.</span></p>
+      </div>
+    </section>
+
+    <section class="section menu-section" id="menu" aria-labelledby="menu-title">
+      <div class="container">
+        <div class="section-head centered">
+          <p class="eyebrow">The Menu</p>
+          <h2 id="menu-title">Order Ahead</h2>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="menu-tabs" role="tablist" aria-label="Filter menu items">
+          <button class="menu-tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="menu-tab" data-filter="beverages" role="tab" aria-selected="false">Beverages</button>
+          <button class="menu-tab" data-filter="combos" role="tab" aria-selected="false">Combos</button>
+        </div>
+
+        <!-- Quote -->
+        <blockquote class="menu-quote">
+          “Our Transparent Pani is steeped fresh every morning — no shortcuts, no concentrate.”
+        </blockquote>
+
+        <!-- Menu Items Grid -->
+        <div class="menu-items-grid" id="menu-items-grid">
+          <!-- Bangarpet Special PaniPuri -->
+          <article class="menu-item-card" data-category="all">
+            <div class="menu-item-wrapper">
+              <img src="./photos/Bangarpet%20Special%20Pani%20Puri.png" alt="Bangarpet Special PaniPuri" loading="lazy">
+              <div class="menu-item-content">
+                <div class="menu-item-header">
+                  <h3>Bangarpet Special PaniPuri</h3>
+                  <span class="menu-item-price">$9.99</span>
+                </div>
+                <p class="menu-item-ingredients">🌾 All-Purpose Flour 🌾 Semolina (Sooji) 🟢 Green Peas 💧 Signature Transparent Secret Pani 🧅 Fresh Onion 🥕 Fresh Grated Carrot 🌿 Fresh Coriander ✨ Crunchy Om Podi (Sev)</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Bhel Puri -->
+          <article class="menu-item-card" data-category="all">
+            <div class="menu-item-wrapper">
+              <img src="./photos/Bhel%20Puri.png" alt="Bhel Puri" loading="lazy">
+              <div class="menu-item-content">
+                <div class="menu-item-header">
+                  <h3>Bhel Puri</h3>
+                  <span class="menu-item-price">$9.99</span>
+                </div>
+                <p class="menu-item-ingredients">🌾 Crispy Puffed Rice 🟢 Green Peas 🥜 Roasted Groundnuts ✨ Signature House Masala ✨ Crunchy Om Podi (Sev) 🍋 Fresh Lemon Juice</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Dahi Puri -->
+          <article class="menu-item-card" data-category="all">
+            <div class="menu-item-wrapper">
+              <img src="./photos/Dahi%20Puri.png" alt="Dahi Puri" loading="lazy">
+              <div class="menu-item-content">
+                <div class="menu-item-header">
+                  <h3>Dahi Puri</h3>
+                  <span class="menu-item-price">$11.99</span>
+                </div>
+                <p class="menu-item-ingredients">🥣 Homemade Crispy Puri 🟢 Green Peas 🧅 Fresh Onion 🥕 Fresh Carrot 🌿 Fresh Coriander 🥛 Creamy Yogurt ✨ Signature Sweet Masala ✨ Crunchy Om Podi (Sev) 🌶️ Crispy Kara Boondi 🌿 Aromatic Chaat Spice Blend</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Masala Puri -->
+          <article class="menu-item-card" data-category="all">
+            <div class="menu-item-wrapper">
+              <img src="./photos/Masala%20Puri.png" alt="Masala Puri" loading="lazy">
+              <div class="menu-item-content">
+                <div class="menu-item-header">
+                  <h3>Masala Puri</h3>
+                  <span class="menu-item-price">$9.99</span>
+                </div>
+                <p class="menu-item-ingredients">Fresh Ingredients 🥣 Homemade Crispy Puri 🟢 Green Peas ✨ Signature Secret Masala 🧅 Fresh Onion 🥕 Fresh Grated Carrot 🌿 Fresh Coriander ✨ Crunchy Om Podi (Sev) 🌶️ Kara Boondi</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Sev Puri -->
+          <article class="menu-item-card" data-category="all">
+            <div class="menu-item-wrapper">
+              <img src="./photos/Sev%20Puri.png" alt="Sev Puri" loading="lazy">
+              <div class="menu-item-content">
+                <div class="menu-item-header">
+                  <h3>Sev Puri</h3>
+                  <span class="menu-item-price">$9.99</span>
+                </div>
+                <p class="menu-item-ingredients">🥣 Homemade Crispy Puri 🟢 Green Peas ✨ Signature House Masala 🧅 Fresh Onion 🥕 Fresh Carrot 🌿 Fresh Coriander 🍅 Fresh Tomato 🥒 Fresh Cucumber ✨ Crunchy Om Podi (Sev) 🌶️ Crispy Kara Boondi 🌿 Aromatic Chaat Spice Blend</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Empty state shown when the Beverages / Combos tabs have no items yet -->
+        <p class="menu-empty-state" id="menu-empty-state" hidden>
+          Combos and beverages will update soon! 🎉
+        </p>
+      </div>
+    </section>
+
+    <section class="section story-section" id="story" aria-labelledby="story-title">
+      <div class="container story-grid">
+        <figure class="story-image"><img src="./photos/ourstory.png" alt="Fresh chaat being prepared" loading="lazy"></figure>
+        <div class="story-copy">
+          <p class="eyebrow">Our story</p>
+          <h2 id="story-title">From a Bangarpet chat streets to Heart of New Zealand.</h2>
+          <p>The Bangarpet PaniPuri began as a single market stall in 2005, built on recipes carried over from Bangarpet. Twenty One years on, we're still a small, family-run kitchen — everything made fresh, nothing sitting under a heat lamp.</p>
+          <p>We're proud to be a New Zealand based business, serving our community one order at a time.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact-section" id="contact" aria-labelledby="contact-title">
+      <div class="container contact-card">
+        <div>
+          <p class="eyebrow">Contact</p>
+          <h2 id="contact-title">Let's talk chaat.</h2>
+          <p>For menu questions, event enquiries and general information, get in touch directly.</p>
+        </div>
+        <div class="contact-actions">
+          <a href="https://wa.me/+642040015331" target="_blank" rel="noopener noreferrer"><span>Click to Message</span><strong>Message us</strong></a>
+          <a href="tel:+642040015331"><span>Phone</span><strong>+64 20 4001 5331</strong></a>
+          <a href="mailto:bangarpetpanipuri2026@gmail.com"><span>Email</span><strong>bangarpetpanipuri2026@gmail.com</strong></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-wrap">
+      <div class="footer-links"><a href="#menu">Menu</a><a href="#story">Our Story</a><a href="#contact">Contact</a></div>
+      <p class="copyright">© <span id="year"></span> Bangarpet PaniPuri RTG</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

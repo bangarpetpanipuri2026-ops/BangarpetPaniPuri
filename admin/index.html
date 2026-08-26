@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy"
+content="
+  default-src 'self';
+  script-src 'self' https://www.gstatic.com;
+  connect-src 'self'
+    https://*.googleapis.com
+    https://*.firebaseio.com
+    https://identitytoolkit.googleapis.com
+    https://securetoken.googleapis.com
+    https://firebaseinstallations.googleapis.com
+    https://firebaselogging.googleapis.com
+    https://www.gstatic.com;
+  img-src 'self' https: data:;
+  style-src 'self' 'unsafe-inline';
+  frame-ancestors 'none';
+  base-uri 'self';
+  form-action 'self';
+">
+<!-- NOTE: frame-ancestors is intentionally not relied on here — meta-tag CSP ignores frame-ancestors per spec.
+     Clickjacking protection MUST come from an HTTP response header (CSP frame-ancestors 'none' or X-Frame-Options: DENY)
+     set by your hosting layer, not from this tag. See README "Production hardening" for the full list. -->
+<title>Bangarpet Pani Puri — Admin</title>
+<link rel="stylesheet" href="./admin.css">
+</head>
+<body>
+<div id="authScreen" class="auth-screen">
+  <div class="login-card">
+    <div class="logo-mark">BP</div>
+    <p class="eyebrow">BANGARPET PANI PURI</p>
+    <h1>Admin sign in</h1>
+    <p class="muted">Private marketing control panel.</p>
+    <form id="loginForm" autocomplete="on">
+      <label>Email<input id="email" type="email" autocomplete="username" required maxlength="254"></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" required maxlength="128"></label>
+      <button class="primary full" type="submit">Sign in securely</button>
+      <p id="loginError" class="error" role="alert"></p>
+    </form>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <aside class="sidebar">
+    <div class="brand"><strong>BANGARPET PANI PURI</strong><span>Marketing Admin · Phase 1</span></div>
+    <nav>
+      <button class="active" data-page="dashboard">Dashboard</button>
+      <button data-page="homepage">Homepage</button>
+      <button data-page="menu">Menu</button>
+      <button data-page="promotions">Promotions</button>
+      <button data-page="story">Our Story</button>
+      <button data-page="contact">Contact</button>
+      <button data-page="social">Social</button>
+      <div class="nav-label">Security</div>
+      <button data-page="audit">Audit Log</button>
+      <button data-page="settings">Settings</button>
+    </nav>
+    <button id="logout" class="logout">Sign out</button>
+  </aside>
+
+  <main>
+    <header class="top">
+      <div><p class="eyebrow">CONTROL CENTER</p><h1 id="pageTitle">Dashboard</h1><p class="muted">Only authenticated admins can publish changes.</p></div>
+      <div class="top-actions"><button id="preview" class="secondary">Preview site</button><span id="userBadge" class="user-badge"></span></div>
+    </header>
+
+    <section id="dashboard" class="page active">
+      <div class="stats">
+        <article><span>Menu items</span><b id="menuCount">0</b><small>Customer-visible items</small></article>
+        <article><span>Promotions</span><b id="promoCount">0</b><small>Active campaigns</small></article>
+        <article><span>Sections visible</span><b id="sectionCount">0</b><small>Homepage controls</small></article>
+      </div>
+      <div class="paper">
+        <div class="paper-head"><div><h2>Homepage visibility</h2><p>Whole-section controls.</p></div></div>
+        <div id="sectionList" class="rows"></div>
+      </div>
+    </section>
+
+    <section id="homepage" class="page">
+      <div class="paper"><div class="paper-head"><h2>Homepage</h2><span class="safe">Protected publish</span></div><div id="homeSectionList" class="rows"></div></div>
+      <div class="two-col">
+        <div class="paper"><div class="paper-head"><h2>Grand Opening</h2><label class="switch"><input id="grandEnabled" type="checkbox"><span></span></label></div>
+          <p class="muted">The customer sees this only according to the setting below.</p>
+          <label>Video path<input id="grandVideo" maxlength="180" placeholder="/videos/grand-opening.mp4"></label>
+          <label>Display<select id="grandDisplay"><option value="first">First visit only</option><option value="every">Every visit</option></select></label>
+          <button id="saveGrand" class="primary">Save Grand Opening</button>
+        </div>
+        <div class="preview"><div class="ring"></div><h2>GRAND OPENING</h2><p>Crystal-clear pani · Bangarpet PaniPuri</p></div>
+      </div>
+    </section>
+
+    <section id="menu" class="page">
+      <div class="paper"><div class="paper-head"><div><h2>Menu</h2><p>Images remain public website assets; no GitHub token is stored here.</p></div><button id="addMenu" class="primary">+ Add item</button></div><div id="menuList" class="menu-list"></div></div>
+    </section>
+
+    <section id="promotions" class="page">
+      <div class="paper"><div class="paper-head"><div><h2>Promotions</h2><p>Create marketing campaigns and disable them when finished.</p></div><button id="addPromo" class="primary">+ Add promotion</button></div><div id="promoList" class="menu-list"></div></div>
+    </section>
+
+    <section id="story" class="page"><div class="paper"><div class="paper-head"><h2>Our Story</h2><label class="switch"><input id="storyVisible" type="checkbox"><span></span></label></div><label>Heading<input id="storyHeading" maxlength="120"></label><label>Story<textarea id="storyText" maxlength="2000"></textarea></label><button id="saveStory" class="primary">Save</button></div></section>
+    <section id="contact" class="page"><div class="paper"><div class="paper-head"><h2>Contact</h2><label class="switch"><input id="contactVisible" type="checkbox"><span></span></label></div><div class="two-col"><label>Phone<input id="phone" maxlength="40"></label><label>Email<input id="contactEmail" type="email" maxlength="254"></label><label>WhatsApp<input id="whatsapp" maxlength="100"></label></div><button id="saveContact" class="primary">Save</button></div></section>
+    <section id="social" class="page"><div class="paper"><div class="paper-head"><h2>Social links</h2></div><div class="two-col"><label>Instagram<input id="instagram" maxlength="300"></label><label>Facebook<input id="facebook" maxlength="300"></label><label>TikTok<input id="tiktok" maxlength="300"></label><label>Google Business<input id="googleBusiness" maxlength="500"></label></div><button id="saveSocial" class="primary">Save</button></div></section>
+    <section id="audit" class="page"><div class="paper"><div class="paper-head"><div><h2>Audit Log</h2><p>Every write should be attributable to an authenticated admin.</p></div></div><div id="auditList" class="audit-list"></div></div></section>
+    <section id="settings" class="page"><div class="paper"><div class="paper-head"><h2>Security settings</h2></div><div class="security-grid"><div><b>Authentication</b><p>Email/password via Firebase Authentication.</p></div><div><b>Database</b><p>Firestore rules should allow writes only to approved admin UIDs.</p></div><div><b>App protection</b><p>Enable Firebase App Check before production.</p></div><div><b>Secrets</b><p>No GitHub token or service-account key belongs in this browser app.</p></div></div></div></section>
+  </main>
+</div>
+<div id="toast" class="toast" aria-live="polite"></div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
