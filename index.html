@@ -21,13 +21,13 @@
         playsinline
         preload="auto"
     >
-        <source src="./photos/videos/grand-opening.mp4" type="video/mp4">
+        <source id="grand-opening-video-source" src="./photos/videos/grand-opening.mp4" type="video/mp4">
     </video>
 </div>
   <header class="site-header" id="top">
     <div class="container nav-wrap">
-      <a class="brand" href="#top" aria-label="Bangarpet PaniPurii home">
-        <img class="brand-mark" src="./photos/site/logo.png" alt="Bangarpet PaniPurii logo">
+      <a class="brand" href="#top" aria-label="Bangarpet PaniPuri home">
+        <img id="logo-img" class="brand-mark" src="./photos/site/logo.png" alt="Bangarpet PaniPuri logo">
         <span>Bangarpet PaniPuri</span>
       </a>
 
@@ -43,14 +43,14 @@
       </nav>
 
       <div class="nav-actions">
-        <a class="whatsapp-link" href="https://wa.me/+642040015331" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-        <a class="call-link" href="tel:+642040015331">Call</a>
+        <a id="header-whatsapp" class="whatsapp-link" href="https://wa.me/+642040015331" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a id="header-call" class="call-link" href="tel:+642040015331">Call</a>
       </div>
     </div>
   </header>
 
   <main>
-    <section class="hero" aria-labelledby="hero-title">
+    <section class="hero" id="hero" aria-labelledby="hero-title">
       <video class="hero-video" autoplay muted loop playsinline poster="./photos/site/bg.png" aria-hidden="true">
         <source src="./photos/videos/video.mp4" type="video/mp4">
       </video>
@@ -175,11 +175,11 @@
 
     <section class="section story-section" id="story" aria-labelledby="story-title">
       <div class="container story-grid">
-        <figure class="story-image"><img src="./photos/site/ourstory.png" alt="Fresh chaat being prepared" loading="lazy"></figure>
+        <figure class="story-image"><img id="story-img" src="./photos/site/ourstory.png" alt="Fresh chaat being prepared" loading="lazy"></figure>
         <div class="story-copy">
           <p class="eyebrow">Our story</p>
           <h2 id="story-title">From a Bangarpet chat streets to Heart of New Zealand.</h2>
-          <p>The Bangarpet PaniPuri began as a single market stall in 2005, built on recipes carried over from Bangarpet. Twenty One years on, we're still a small, family-run kitchen — everything made fresh, nothing sitting under a heat lamp.</p>
+          <p id="story-text">The Bangarpet PaniPuri began as a single market stall in 2005, built on recipes carried over from Bangarpet. Twenty One years on, we're still a small, family-run kitchen — everything made fresh, nothing sitting under a heat lamp.</p>
           <p>We're proud to be a New Zealand based business, serving our community one order at a time.</p>
         </div>
       </div>
@@ -193,9 +193,9 @@
           <p>For menu questions, event enquiries and general information, get in touch directly.</p>
         </div>
         <div class="contact-actions">
-          <a href="https://wa.me/+642040015331" target="_blank" rel="noopener noreferrer"><span>Click to Message</span><strong>Message us</strong></a>
-          <a href="tel:+642040015331"><span>Phone</span><strong>+64 20 4001 5331</strong></a>
-          <a href="mailto:bangarpetpanipuri2026@gmail.com"><span>Email</span><strong>bangarpetpanipuri2026@gmail.com</strong></a>
+          <a id="contact-whatsapp" href="https://wa.me/+642040015331" target="_blank" rel="noopener noreferrer"><span>Click to Message</span><strong>Message us</strong></a>
+          <a id="contact-phone" href="tel:+642040015331"><span>Phone</span><strong>+64 20 4001 5331</strong></a>
+          <a id="contact-email" href="mailto:bangarpetpanipuri2026@gmail.com"><span>Email</span><strong>bangarpetpanipuri2026@gmail.com</strong></a>
         </div>
       </div>
     </section>

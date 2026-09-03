@@ -1,5 +1,22 @@
-document.addEventListener('DOMContentLoaded', function () {
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getFirestore, doc, getDoc, collection, query, orderBy, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
+// Firebase configuration (same as admin)
+const firebaseConfig = {
+  apiKey: "AIzaSyDElY-ymgLDDpsLCmwP_nArVq3cZVcD-VU",
+  authDomain: "fir-project-ad1c8.firebaseapp.com",
+  projectId: "fir-project-ad1c8",
+  storageBucket: "fir-project-ad1c8.firebasestorage.app",
+  messagingSenderId: "726974224635",
+  appId: "1:726974224635:web:eba30088877932befa785e"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+document.addEventListener('DOMContentLoaded', function () {
   // ---- Footer year ----
   var yearEl = document.getElementById('year');
   if (yearEl) {
@@ -73,7 +90,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // Initial menu state
   applyFilter('all');
 
-
   // ==========================================
   // GRAND OPENING
   // ==========================================
@@ -136,15 +152,152 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-});
-
   // ---- WhatsApp message ----
   const whatsappMessage = `Kia ora! 👋 I'd love to know more about Bangarpet Panipuri. Could you please send me your menu and details?`;
 
   const whatsappUrl =
-    'https://wa.me/642040015331?text=' +
+    'https://wa.me/+642040015331?text=' +
     encodeURIComponent(whatsappMessage);
 
   document.querySelectorAll('a[href*="wa.me"]').forEach(function (link) {
     link.href = whatsappUrl;
   });
+
+  // ==========================================
+  // FIREBASE REAL-TIME UPDATES
+  // ==========================================
+
+  // References
+  const configRef = doc(db, "siteConfig", "public");
+  const menuQuery = query(collection(db, "menuItems"), where("visible", "==", true), orderBy("order"));
+
+  // State to hold current config
+  let currentConfig = {
+    sections: {},
+    grandOpening: {enabled:true, video:"/videos/grand-opening.mp4", display:"first"},
+    story: {visible:true, heading:"From Bangarpet streets to the heart of New Zealand.", text:"Our family-run kitchen brings Bangarpet street-food traditions to New Zealand."},
+    featured: {visible:true, heading:"Featured Menu", subheading:""},
+    contact: {visible:true, phone:"+64 20 4001 5331", email:"", whatsapp:""},
+    social: {}
+  };
+
+  // Apply config to UI
+  function applyConfig(config) {
+    // Merge with defaults
+    currentConfig = {...currentConfig, ...config};
+
+    // Update sections visibility
+    Object.keys(currentConfig.sections).forEach(sectionId => {
+      const visible = currentConfig.sections[sectionId];
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.style.display = visible ? '' : 'none';
+      }
+    });
+    // Also handle grandOpening container (intro) based on enabled flag
+    if (intro) {
+      intro.style.display = currentConfig.grandOpening.enabled ? '' : 'none';
+    }
+    // Update logo (if we had brand.logoUrl)
+    // TODO: implement if needed
+
+    // Update grand opening video
+    if (video) {
+      const vidSrc = currentConfig.grandOpening.video;
+      if (vidSrc) {
+        video.querySelector('source').src = vidSrc;
+        video.load();
+      }
+    }
+
+    // Update hero video (static for now, could be from config)
+    // TODO
+
+    // Update story section
+    const storyImg = document.querySelector('#story .story-image img');
+    const storyHeading = document.getElementById('story-title');
+    const storyText = document.querySelector('#story .story-copy p');
+    if (storyImg) {
+      storyImg.src = currentConfig.story.imageUrl || './photos/site/ourstory.png';
+    }
+    if (storyHeading) {
+      storyHeading.textContent = currentConfig.story.heading || '';
+    }
+    if (storyText) {
+      storyText.textContent = currentConfig.story.text || '';
+    }
+
+    // Update contact section
+    const contactPhone = document.getElementById('phone');
+    const contactEmail = document.getElementById('contactEmail');
+    const contactWhatsapp = document.getElementById('whatsapp');
+    if (contactPhone) {
+      contactPhone.textContent = currentConfig.contact.phone || '';
+    }
+    if (contactEmail) {
+      contactEmail.textContent = currentConfig.contact.email || '';
+    }
+    if (contactWhatsapp) {
+      contactWhatsapp.href = 'https://wa.me/' + currentConfig.contact.whatsapp.replace(/\D/g,'');
+      contactWhatsapp.textContent = currentConfig.contact.whatsapp || '';
+    }
+
+    // Update footer social links (if we had them)
+    // TODO
+  }
+
+  // Render menu items from snapshot
+  function renderMenuItems(snapshot) {
+    const menuGrid = document.getElementById('menu-items-grid');
+    if (!menuGrid) return;
+    menuGrid.innerHTML = '';
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const itemEl = document.createElement('article');
+      itemEl.className = 'menu-item-card';
+      itemEl.dataset.category = data.category || 'all';
+      itemEl.innerHTML = `
+        <div class="menu-item-wrapper">
+          <img src="${data.imageUrl || './photos/site/logo.png'}" alt="" loading="lazy">
+          <div class="menu-item-content">
+            <div class="menu-item-header">
+              <h3>${data.name || 'Unnamed'}</h3>
+              <span class="menu-item-price">${data.price || ''}</span>
+            </div>
+            <p class="menu-item-ingredients">${data.description || ''}</p>
+          </div>
+        </div>
+      `;
+      menuGrid.appendChild(itemEl);
+    });
+    // Update empty state based on whether any items after filtering? We'll rely on tab filtering.
+    // We'll trigger applyFilter for current active tab to show empty state if needed.
+    const activeTab = document.querySelector('.menu-tab.active');
+    if (activeTab) {
+      applyFilter(activeTab.getAttribute('data-filter'));
+    }
+  }
+
+  // Set up real-time listeners
+  // Config listener
+  onSnapshot(configRef, (docSnap) => {
+    if (docSnap.exists()) {
+      applyConfig(docSnap.data());
+    } else {
+      // No config yet, apply defaults
+      applyConfig({});
+    }
+  }, (error) => {
+    console.error("Error listening to config:", error);
+    // Fallback to defaults
+    applyConfig({});
+  });
+
+  // Menu items listener
+  onSnapshot(menuQuery, (snapshot) => {
+    renderMenuItems(snapshot);
+  }, (error) => {
+    console.error("Error listening to menu items:", error);
+    // Optionally fallback to static menu (hardcoded)
+  });
+});
