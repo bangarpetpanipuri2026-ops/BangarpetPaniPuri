@@ -26,28 +26,77 @@ const db = getFirestore(app);
 
 const $ = id => document.getElementById(id);
 const toast = msg => { $("toast").textContent=msg; $("toast").style.display="block"; setTimeout(()=>$("toast").style.display="none",2400); };
-const state = { sections: {hero:true, featured:true, promotion:true, story:true, contact:true}, grandOpening:{enabled:true,video:"/videos/grand-opening.mp4",display:"first"}, story:{visible:true,heading:"From Bangarpet streets to the heart of New Zealand.",text:"Our family-run kitchen brings Bangarpet street-food traditions to New Zealand."}, contact:{visible:true,phone:"+64 20 4001 5331",email:"",whatsapp:""}, featured:{visible:true,heading:"Featured Menu",subheading:""}, social:{} };
+const state = { sections: {hero:true, featured:true, promotion:true, story:true, contact:true}, grandOpening:{enabled:true,video:"/photos/videos/grand-opening.mp4",display:"first"}, story:{visible:true,heading:"From Bangarpet streets to the heart of New Zealand.",text:"Our family-run kitchen brings Bangarpet street-food traditions to New Zealand."}, contact:{visible:true,phone:"+64 20 4001 5331",email:"",whatsapp:""}, featured:{visible:true,heading:"Featured Menu",subheading:""}, social:{} };
 
 const sections=[["hero","Hero Section","Main opening area"],["featured","Featured Menu","Highlighted food items"],["promotion","Promotion","Marketing campaign"],["story","Our Story","Brand story"],["contact","Contact","Phone, email and WhatsApp"]];
 
 function sectionHtml(){return sections.map(([id,n,d])=>`<div class="row"><div class="left"><div class="icon">●</div><div><b>${n}</b><small>${d}</small></div></div><label class="switch"><input type="checkbox" data-section="${id}" ${state.sections[id]!==false?"checked":""}><span></span></label></div>`).join("")}
-function renderSections(){ $("sectionList").innerHTML=sectionHtml(); $("homeSectionList").innerHTML=sectionHtml(); document.querySelectorAll("[data-section]").forEach(x=>x.onchange=()=>{state.sections[x.dataset.section]=x.checked; renderSections();}); $("sectionCount").textContent=sections.filter(s=>state.sections[s[0]]!==false).length; }
+function renderSections(){ $("sectionList").innerHTML=sectionHtml(); $("homeSectionList").innerHTML=sectionHtml(); document.querySelectorAll("[data-section]").forEach(x=>x.onchange=()=>{state.sections[x.dataset.section]=x.checked; renderSections(); saveSections();}); $("sectionCount").textContent=sections.filter(s=>state.sections[s[0]]!==false).length; }
 
 async function loadData(){
   if(!auth.currentUser) return;
   try{
-    const s=await getDoc(doc(db,"siteConfig","public"));
-    if(s.exists()){ Object.assign(state,s.data()); state.sections=state.sections||{}; }
+    // Load site configuration (includes sections, grandOpening, story, featured, contact, social)
+    const configSnap = await getDoc(doc(db,"siteConfig","public"));
+    if(configSnap.exists()){
+      const config = configSnap.data();
+      // Load sections toggles
+      if(config.sections && typeof config.sections === 'object'){
+        state.sections = config.sections;
+      }else{
+        // default to all true
+        state.sections = Object.fromEntries(sections.map(([id])=>[id,true]));
+      }
+      // Load other fields if present
+      if(config.grandOpening) state.grandOpening = config.grandOpening;
+      if(config.story) state.story = config.story;
+      if(config.featured) state.featured = config.featured;
+      if(config.contact) state.contact = config.contact;
+      if(config.social) state.social = config.social;
+    }else{
+      // No config yet, set defaults and persist
+      state.sections = Object.fromEntries(sections.map(([id])=>[id,true]));
+      state.grandOpening = {enabled:true,video:"/videos/grand-opening.mp4",display:"first"};
+      state.story = {visible:true,heading:"From Bangarpet streets to the heart of New Zealand.",text:"Our family-run kitchen brings Bangarpet street-food traditions to New Zealand."};
+      state.featured = {visible:true,heading:"Featured Menu",subheading:""};
+      state.contact = {visible:true,phone:"+64 20 4001 5331",email:"",whatsapp:""};
+      state.social = {};
+      // Persist defaults
+      await setDoc(doc(db,"siteConfig","public"), {
+        sections: state.sections,
+        grandOpening: state.grandOpening,
+        story: state.story,
+        featured: state.featured,
+        contact: state.contact,
+        social: state.social
+      }, {merge:true});
+    }
+    // Load menu items
     const m=await getDocs(query(collection(db,"menuItems"),orderBy("name"),limit(100)));
     renderMenu(m.docs); $("menuCount").textContent=m.size;
+    // Load promotions
     const p=await getDocs(query(collection(db,"promotions"),orderBy("createdAt","desc"),limit(50)));
     $("promoCount").textContent=p.size; renderPromos(p.docs);
+    // Load audit logs
+    loadAudit();
+    // Sync UI with loaded state
+    syncForms();
+    renderSections();
   }catch(e){ console.error(e); toast("Could not load data."); }
-  syncForms(); renderSections(); loadAudit();
 }
 function syncForms(){ $("grandEnabled").checked=state.grandOpening?.enabled!==false; $("grandVideo").value=state.grandOpening?.video||""; $("grandDisplay").value=state.grandOpening?.display||"first"; $("storyVisible").checked=state.story?.visible!==false; $("storyHeading").value=state.story?.heading||""; $("storyText").value=state.story?.text||""; $("contactVisible").checked=state.contact?.visible!==false; $("phone").value=state.contact?.phone||""; $("contactEmail").value=state.contact?.email||""; $("whatsapp").value=state.contact?.whatsapp||""; $("featuredVisible").checked=state.featured?.visible!==false; $("featuredHeading").value=state.featured?.heading||""; $("featuredSubheading").value=state.featured?.subheading||""; $("instagram").value=state.social?.instagram||""; $("facebook").value=state.social?.facebook||""; $("tiktok").value=state.social?.tiktok||""; $("googleBusiness").value=state.social?.googleBusiness||""; }
 
 async function audit(action,target){ try{await addDoc(collection(db,"auditLogs"),{action,target,uid:auth.currentUser.uid,email:auth.currentUser.email,createdAt:serverTimestamp()});}catch(e){console.error(e)} }
+async function saveSections(){
+  try{
+    await setDoc(doc(db,"siteConfig","public"), { sections: state.sections }, { merge: true });
+    await audit("UPDATE","siteConfig/sections");
+    toast("Sections saved.");
+  }catch(e){
+    console.error(e);
+    toast("Failed to save sections.");
+  }
+}
 async function saveSite(patch,target){ try{ await setDoc(doc(db,"siteConfig","public"),patch,{merge:true}); Object.assign(state,patch); await audit("UPDATE",target); toast("Saved securely."); }catch(e){console.error(e);toast("Save failed — check permissions.");} }
 
 function renderMenu(docs){ $("menuList").innerHTML=docs.map(x=>{const d=x.data();return `<div class="menu-item"><img class="food-img" src="${safeUrl(d.imageUrl)}" alt="" onerror="this.style.visibility='hidden'"><div><b>${esc(d.name||"Untitled")}</b><small>${esc(d.category||"")} · ${esc(d.description||"")}</small></div><strong>${esc(d.price||"")}</strong><div class="menu-actions"><button class="mini" data-edit="${x.id}">Edit</button><button class="mini" data-del="${x.id}">Delete</button></div></div>`}).join("")||'<p class="muted">No menu items yet.</p>'; document.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{if(!confirm("Delete this menu item?"))return;try{await deleteDoc(doc(db,"menuItems",b.dataset.del));await audit("DELETE","menuItems/"+b.dataset.del);toast("Item deleted.");loadData()}catch(e){toast("Delete blocked.");}}); document.querySelectorAll("[data-edit]").forEach(button => {

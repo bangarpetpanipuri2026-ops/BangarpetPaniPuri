@@ -90,75 +90,106 @@ document.addEventListener('DOMContentLoaded', function () {
   // Initial menu state
   applyFilter('all');
 
+  // TEMPORARILY DISABLE GRAND OPENING - set to true to disable
+  const TEMP_DISABLE_GRAND_OPENING = true;
+
   // ==========================================
   // GRAND OPENING
   // ==========================================
 
+  // Handle grand opening based on temporary disable flag
   var intro = document.getElementById('grandOpening');
   var video = document.getElementById('grandOpeningVideo');
 
-  // Make sure the Grand Opening HTML exists
-  if (intro && video) {
-
-    var hasSeenIntro =
-      localStorage.getItem('bangarpetGrandOpening');
-
-    console.log('Grand Opening: hasSeenIntro =', hasSeenIntro);
-
-    // Already seen → remove immediately
-    if (hasSeenIntro === 'true') {
-      console.log('Grand Opening: already seen, removing intro');
+  if (TEMP_DISABLE_GRAND_OPENING) {
+    // TEMPORARILY DISABLE GRAND OPENING - remove element entirely
+    if (intro) {
       intro.remove();
+      console.log('Grand Opening: temporarily disabled - element removed from DOM');
+    }
+    // Ensure variables are defined (possibly null) for applyConfig function
+  } else {
+    // Run normal grand opening logic
+    // Make sure the Grand Opening HTML exists
+    if (intro && video) {
 
-    } else {
-      console.log('Grand Opening: showing intro');
+      var hasSeenIntro =
+        localStorage.getItem('bangarpetGrandOpening');
 
-      // Finish the intro
-      function finishIntro() {
-        console.log('Grand Opening: finishIntro called');
-        // Prevent this function from running multiple times
-        if (!intro || intro.classList.contains('hide')) {
-          console.log('Grand Opening: finishIntro early return');
-          return;
+      console.log('Grand Opening: hasSeenIntro =', hasSeenIntro);
+
+      // Already seen → remove immediately
+      if (hasSeenIntro === 'true') {
+        console.log('Grand Opening: already seen, removing intro');
+        intro.remove();
+
+      } else {
+        console.log('Grand Opening: showing intro');
+
+        // Finish the intro
+        function finishIntro() {
+          console.log('Grand Opening: finishIntro called');
+          // Prevent this function from running multiple times
+          if (!intro || intro.classList.contains('hide')) {
+            console.log('Grand Opening: finishIntro early return');
+            return;
+          }
+
+          localStorage.setItem(
+            'bangarpetGrandOpening',
+            'true'
+          );
+          console.log('Grand Opening: set localStorage true');
+
+          intro.classList.add('hide');
+          console.log('Grand Opening: added hide class');
+
+          // Remove after transition ends (opacity transition 0.7s)
+          intro.addEventListener('transitionend', function removeIntro(e) {
+            if (e.propertyName === 'opacity') {
+              intro.removeEventListener('transitionend', removeIntro);
+              if (intro) {
+                intro.remove();
+                console.log('Grand Opening: removed intro from DOM via transitionend');
+              }
+            }
+          });
+
+          // Fallback timer
+          setTimeout(function () {
+            if (intro) {
+              intro.remove();
+              console.log('Grand Opening: removed intro from DOM via fallback timer');
+            }
+          }, 1000);
         }
 
-        localStorage.setItem(
-          'bangarpetGrandOpening',
-          'true'
+        // When video finishes
+        video.addEventListener(
+          'ended',
+          finishIntro
         );
-        console.log('Grand Opening: set localStorage true');
+        console.log('Grand Opening: attached ended listener');
 
-        intro.classList.add('hide');
-        console.log('Grand Opening: added hide class');
+        // Allow clicking to dismiss
+        intro.addEventListener('click', finishIntro);
+        video.addEventListener('click', finishIntro);
+        console.log('Grand Opening: attached click listeners');
 
-        setTimeout(function () {
-          if (intro) {
-            intro.remove();
-            console.log('Grand Opening: removed intro from DOM');
-          }
-        }, 700);
+        // Backup timer
+        setTimeout(
+          finishIntro,
+          1500
+        );
+        console.log('Grand Opening: set backup timer 1500ms');
+
+        // Make sure video starts
+        video.play().catch(function (e) {
+          console.log('Grand Opening: video.play failed, error:', e);
+          // If autoplay is blocked, still allow
+          // the backup timer to remove the intro.
+        });
       }
-
-      // When video finishes
-      video.addEventListener(
-        'ended',
-        finishIntro
-      );
-      console.log('Grand Opening: attached ended listener');
-
-      // Backup timer
-      setTimeout(
-        finishIntro,
-        3000
-      );
-      console.log('Grand Opening: set backup timer 3000ms');
-
-      // Make sure video starts
-      video.play().catch(function (e) {
-        console.log('Grand Opening: video.play failed, error:', e);
-        // If autoplay is blocked, still allow
-        // the backup timer to remove the intro.
-      });
     }
   }
 
@@ -184,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // State to hold current config
   let currentConfig = {
     sections: {},
-    grandOpening: {enabled:true, video:"/videos/grand-opening.mp4", display:"first"},
+    grandOpening: {enabled:true, video:"/photos/videos/grand-opening.mp4", display:"first"},
     story: {visible:true, heading:"From Bangarpet streets to the heart of New Zealand.", text:"Our family-run kitchen brings Bangarpet street-food traditions to New Zealand."},
     featured: {visible:true, heading:"Featured Menu", subheading:""},
     contact: {visible:true, phone:"+64 20 4001 5331", email:"", whatsapp:""},
@@ -193,6 +224,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Apply config to UI
   function applyConfig(config) {
+    // Temporarily disable grand opening if needed
+    if (typeof TEMP_DISABLE_GRAND_OPENING !== 'undefined' && TEMP_DISABLE_GRAND_OPENING) {
+      // Override to force disabled state
+      config = {...config};
+      if (!config.grandOpening) {
+        config.grandOpening = {enabled:false};
+      } else {
+        config.grandOpening = {...config.grandOpening, enabled:false};
+      }
+    }
     // Merge with defaults
     currentConfig = {...currentConfig, ...config};
 
@@ -205,18 +246,23 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
     // Also handle grandOpening container (intro) based on enabled flag
-    if (intro) {
+    // Only modify if element still exists in DOM (might have been removed)
+    if (intro && intro.parentElement) {
       intro.style.display = currentConfig.grandOpening.enabled ? '' : 'none';
     }
     // Update logo (if we had brand.logoUrl)
     // TODO: implement if needed
 
     // Update grand opening video
-    if (video) {
+    // Only update if video element still exists in DOM
+    if (video && video.parentElement) {
       const vidSrc = currentConfig.grandOpening.video;
       if (vidSrc) {
-        video.querySelector('source').src = vidSrc;
-        video.load();
+        const sourceEl = video.querySelector('source');
+        if (sourceEl) {
+          sourceEl.src = vidSrc;
+          video.load();
+        }
       }
     }
 
