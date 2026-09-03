@@ -26,7 +26,7 @@ const db = getFirestore(app);
 
 const $ = id => document.getElementById(id);
 const toast = msg => { $("toast").textContent=msg; $("toast").style.display="block"; setTimeout(()=>$("toast").style.display="none",2400); };
-const state = { sections: {hero:true, featured:true, promotion:true, story:true, contact:true}, grandOpening:{enabled:true,video:"/videos/grand-opening.mp4",display:"first"}, story:{visible:true,heading:"From Bangarpet streets to the heart of New Zealand.",text:"Our family-run kitchen brings Bangarpet street-food traditions to New Zealand."}, contact:{visible:true,phone:"+64 20 4001 5331",email:"",whatsapp:""}, social:{} };
+const state = { sections: {hero:true, featured:true, promotion:true, story:true, contact:true}, grandOpening:{enabled:true,video:"/videos/grand-opening.mp4",display:"first"}, story:{visible:true,heading:"From Bangarpet streets to the heart of New Zealand.",text:"Our family-run kitchen brings Bangarpet street-food traditions to New Zealand."}, contact:{visible:true,phone:"+64 20 4001 5331",email:"",whatsapp:""}, featured:{visible:true,heading:"Featured Menu",subheading:""}, social:{} };
 
 const sections=[["hero","Hero Section","Main opening area"],["featured","Featured Menu","Highlighted food items"],["promotion","Promotion","Marketing campaign"],["story","Our Story","Brand story"],["contact","Contact","Phone, email and WhatsApp"]];
 
@@ -45,7 +45,7 @@ async function loadData(){
   }catch(e){ console.error(e); toast("Could not load data."); }
   syncForms(); renderSections(); loadAudit();
 }
-function syncForms(){ $("grandEnabled").checked=state.grandOpening?.enabled!==false; $("grandVideo").value=state.grandOpening?.video||""; $("grandDisplay").value=state.grandOpening?.display||"first"; $("storyVisible").checked=state.story?.visible!==false; $("storyHeading").value=state.story?.heading||""; $("storyText").value=state.story?.text||""; $("contactVisible").checked=state.contact?.visible!==false; $("phone").value=state.contact?.phone||""; $("contactEmail").value=state.contact?.email||""; $("whatsapp").value=state.contact?.whatsapp||""; $("instagram").value=state.social?.instagram||""; $("facebook").value=state.social?.facebook||""; $("tiktok").value=state.social?.tiktok||""; $("googleBusiness").value=state.social?.googleBusiness||""; }
+function syncForms(){ $("grandEnabled").checked=state.grandOpening?.enabled!==false; $("grandVideo").value=state.grandOpening?.video||""; $("grandDisplay").value=state.grandOpening?.display||"first"; $("storyVisible").checked=state.story?.visible!==false; $("storyHeading").value=state.story?.heading||""; $("storyText").value=state.story?.text||""; $("contactVisible").checked=state.contact?.visible!==false; $("phone").value=state.contact?.phone||""; $("contactEmail").value=state.contact?.email||""; $("whatsapp").value=state.contact?.whatsapp||""; $("featuredVisible").checked=state.featured?.visible!==false; $("featuredHeading").value=state.featured?.heading||""; $("featuredSubheading").value=state.featured?.subheading||""; $("instagram").value=state.social?.instagram||""; $("facebook").value=state.social?.facebook||""; $("tiktok").value=state.social?.tiktok||""; $("googleBusiness").value=state.social?.googleBusiness||""; }
 
 async function audit(action,target){ try{await addDoc(collection(db,"auditLogs"),{action,target,uid:auth.currentUser.uid,email:auth.currentUser.email,createdAt:serverTimestamp()});}catch(e){console.error(e)} }
 async function saveSite(patch,target){ try{ await setDoc(doc(db,"siteConfig","public"),patch,{merge:true}); Object.assign(state,patch); await audit("UPDATE",target); toast("Saved securely."); }catch(e){console.error(e);toast("Save failed — check permissions.");} }
@@ -81,7 +81,16 @@ function renderMenu(docs){ $("menuList").innerHTML=docs.map(x=>{const d=x.data()
   };
 
 });}
-function renderPromos(docs){$("promoList").innerHTML=docs.docs?.map?.(()=> "")||""; if(!docs.size){$("promoList").innerHTML='<p class="muted">No promotions yet.</p>';return;} docs.forEach(x=>{const d=x.data();$("promoList").insertAdjacentHTML("beforeend",`<div class="row"><div><b>${esc(d.title||"Promotion")}</b><small>${esc(d.text||"")}</small></div><span class="safe">${d.enabled===false?"Hidden":"Active"}</span></div>`);});}
+function renderPromos(docs){
+  if(!docs.size){
+    $("promoList").innerHTML='<p class="muted">No promotions yet.</p>';
+    return;
+  }
+  $("promoList").innerHTML=docs.docs.map(x=>{
+    const d=x.data();
+    return `<div class="row"><div><b>${esc(d.title||"Promotion")}</b><small>${esc(d.text||"")}</small></div><span class="safe">${d.enabled===false?"Hidden":"Active"}</span></div>`;
+  }).join("");
+}
 async function loadAudit(){try{const q=query(collection(db,"auditLogs"),orderBy("createdAt","desc"),limit(30));const s=await getDocs(q);$("auditList").innerHTML=s.docs.map(x=>{const d=x.data();return `<div class="audit"><b>${esc(d.action||"WRITE")}</b> · ${esc(d.target||"") }<br><small>${esc(d.email||d.uid||"")} · ${d.createdAt?.toDate?d.createdAt.toDate().toLocaleString():"pending"}</small></div>`}).join("")||'<p class="muted">No audit entries.</p>'}catch(e){$("auditList").innerHTML='<p class="muted">Audit log unavailable.</p>'}}
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function safeUrl(v){try{const u=new URL(v,location.origin); if(u.protocol==="https:"||u.origin===location.origin)return u.href}catch{} return ""}
@@ -92,6 +101,7 @@ $("logout").onclick=()=>signOut(auth);
 $("preview").onclick=()=>window.open("https://bangarpetpanipuri.co.nz/","_blank");
 $("saveGrand").onclick=()=>saveSite({grandOpening:{enabled:$("grandEnabled").checked,video:$("grandVideo").value.trim(),display:$("grandDisplay").value}},"grandOpening");
 $("saveStory").onclick=()=>saveSite({story:{visible:$("storyVisible").checked,heading:$("storyHeading").value.trim(),text:$("storyText").value.trim()}},"story");
+$("saveFeatured").onclick=()=>saveSite({featured:{visible:$("featuredVisible").checked,heading:$("featuredHeading").value.trim(),subheading:$("featuredSubheading").value.trim()}},"featured");
 $("saveContact").onclick=()=>saveSite({contact:{visible:$("contactVisible").checked,phone:$("phone").value.trim(),email:$("contactEmail").value.trim(),whatsapp:$("whatsapp").value.trim()}},"contact");
 $("saveSocial")?.addEventListener("click",()=>saveSite({social:{instagram:$("instagram").value.trim(),facebook:$("facebook").value.trim(),tiktok:$("tiktok").value.trim(),googleBusiness:$("googleBusiness").value.trim()}},"social"));
 $("addMenu").onclick = () => {
@@ -181,7 +191,7 @@ function openMenuModal(item = null, id = null) {
         </label>
 
         <label>
-          GitHub image path
+          Image path
           <input
             id="menuImage"
             type="text"
