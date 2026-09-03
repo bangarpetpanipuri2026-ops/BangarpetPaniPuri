@@ -103,18 +103,22 @@ document.addEventListener('DOMContentLoaded', function () {
     var hasSeenIntro =
       localStorage.getItem('bangarpetGrandOpening');
 
+    console.log('Grand Opening: hasSeenIntro =', hasSeenIntro);
+
     // Already seen → remove immediately
     if (hasSeenIntro === 'true') {
-
+      console.log('Grand Opening: already seen, removing intro');
       intro.remove();
 
     } else {
+      console.log('Grand Opening: showing intro');
 
       // Finish the intro
       function finishIntro() {
-
+        console.log('Grand Opening: finishIntro called');
         // Prevent this function from running multiple times
         if (!intro || intro.classList.contains('hide')) {
+          console.log('Grand Opening: finishIntro early return');
           return;
         }
 
@@ -122,12 +126,15 @@ document.addEventListener('DOMContentLoaded', function () {
           'bangarpetGrandOpening',
           'true'
         );
+        console.log('Grand Opening: set localStorage true');
 
         intro.classList.add('hide');
+        console.log('Grand Opening: added hide class');
 
         setTimeout(function () {
           if (intro) {
             intro.remove();
+            console.log('Grand Opening: removed intro from DOM');
           }
         }, 700);
       }
@@ -137,15 +144,18 @@ document.addEventListener('DOMContentLoaded', function () {
         'ended',
         finishIntro
       );
+      console.log('Grand Opening: attached ended listener');
 
       // Backup timer
       setTimeout(
         finishIntro,
         3000
       );
+      console.log('Grand Opening: set backup timer 3000ms');
 
       // Make sure video starts
-      video.play().catch(function () {
+      video.play().catch(function (e) {
+        console.log('Grand Opening: video.play failed, error:', e);
         // If autoplay is blocked, still allow
         // the backup timer to remove the intro.
       });
