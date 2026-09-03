@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // References
   const configRef = doc(db, "siteConfig", "public");
-  const menuQuery = query(collection(db, "menuItems"), where("visible", "==", true), orderBy("order"));
+  const menuQuery = query(collection(db, "menuItems"), where("visible", "==", true), orderBy("sortOrder"));
 
   // State to hold current config
   let currentConfig = {
