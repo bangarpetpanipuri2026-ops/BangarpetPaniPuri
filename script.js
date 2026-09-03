@@ -182,9 +182,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const menuQuery = query(collection(db, "menuItems"), where("visible", "==", true), orderBy("order"));
 
   // State to hold current config
+  // FIX #2: default grand-opening video path corrected to match the actual
+  // asset location (./photos/videos/grand-opening.mp4), so applyConfig()
+  // doesn't overwrite the working <source> with a 404 on first load.
   let currentConfig = {
     sections: {},
-    grandOpening: {enabled:true, video:"/videos/grand-opening.mp4", display:"first"},
+    grandOpening: {enabled:true, video:"./photos/videos/grand-opening.mp4", display:"first"},
     story: {visible:true, heading:"From Bangarpet streets to the heart of New Zealand.", text:"Our family-run kitchen brings Bangarpet street-food traditions to New Zealand."},
     featured: {visible:true, heading:"Featured Menu", subheading:""},
     contact: {visible:true, phone:"+64 20 4001 5331", email:"", whatsapp:""},
@@ -212,10 +215,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // TODO: implement if needed
 
     // Update grand opening video
+    // FIX #2 (cont.): only touch the <source> / reload when the configured
+    // path actually differs from what's already set, so a default/unchanged
+    // value can't clobber a perfectly good video src on every snapshot.
     if (video) {
       const vidSrc = currentConfig.grandOpening.video;
-      if (vidSrc) {
-        video.querySelector('source').src = vidSrc;
+      const sourceEl = video.querySelector('source');
+      if (vidSrc && sourceEl && sourceEl.getAttribute('src') !== vidSrc) {
+        sourceEl.src = vidSrc;
         video.load();
       }
     }
@@ -238,18 +245,25 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Update contact section
-    const contactPhone = document.getElementById('phone');
-    const contactEmail = document.getElementById('contactEmail');
-    const contactWhatsapp = document.getElementById('whatsapp');
-    if (contactPhone) {
-      contactPhone.textContent = currentConfig.contact.phone || '';
+    // FIX #1: corrected element IDs to match index.html
+    // (contact-phone / contact-email / contact-whatsapp), previously
+    // 'phone' / 'contactEmail' / 'whatsapp' which don't exist in the DOM,
+    // so this block was silently a no-op.
+    const contactPhone = document.getElementById('contact-phone');
+    const contactEmail = document.getElementById('contact-email');
+    const contactWhatsapp = document.getElementById('contact-whatsapp');
+    if (contactPhone && currentConfig.contact.phone) {
+      var contactPhoneStrong = contactPhone.querySelector('strong');
+      if (contactPhoneStrong) contactPhoneStrong.textContent = currentConfig.contact.phone;
+      contactPhone.setAttribute('href', 'tel:' + currentConfig.contact.phone.replace(/\s+/g, ''));
     }
-    if (contactEmail) {
-      contactEmail.textContent = currentConfig.contact.email || '';
+    if (contactEmail && currentConfig.contact.email) {
+      var contactEmailStrong = contactEmail.querySelector('strong');
+      if (contactEmailStrong) contactEmailStrong.textContent = currentConfig.contact.email;
+      contactEmail.setAttribute('href', 'mailto:' + currentConfig.contact.email);
     }
-    if (contactWhatsapp) {
-      contactWhatsapp.href = 'https://wa.me/' + currentConfig.contact.whatsapp.replace(/\D/g,'');
-      contactWhatsapp.textContent = currentConfig.contact.whatsapp || '';
+    if (contactWhatsapp && currentConfig.contact.whatsapp) {
+      contactWhatsapp.setAttribute('href', 'https://wa.me/' + currentConfig.contact.whatsapp.replace(/\D/g, ''));
     }
 
     // Update footer social links (if we had them)
@@ -257,9 +271,17 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Render menu items from snapshot
+  // FIX #3: if Firestore returns zero visible menu items, keep the static
+  // fallback cards already in the HTML instead of wiping them out.
   function renderMenuItems(snapshot) {
     const menuGrid = document.getElementById('menu-items-grid');
     if (!menuGrid) return;
+
+    if (snapshot.empty) {
+      console.log('Menu items: Firestore snapshot empty, keeping static fallback menu');
+      return;
+    }
+
     menuGrid.innerHTML = '';
     snapshot.forEach(doc => {
       const data = doc.data();
