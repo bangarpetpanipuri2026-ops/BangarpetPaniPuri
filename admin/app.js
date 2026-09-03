@@ -89,7 +89,7 @@ function safeUrl(v){try{const u=new URL(v,location.origin); if(u.protocol==="htt
 document.querySelectorAll("nav button[data-page]").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$(b.dataset.page).classList.add("active");$("pageTitle").textContent=b.textContent;});
 $("loginForm").onsubmit=async e=>{e.preventDefault();$("loginError").textContent="";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value); }catch(e){$("loginError").textContent="Sign-in failed. Check your credentials.";}}
 $("logout").onclick=()=>signOut(auth);
-$("preview").onclick=()=>window.open("https://bangarpetpanipuri.co.nz/","_blank");
+$("preview").onclick=()=>window.open("https://bangarpetpanipuri.pages.dev/","_blank");
 $("saveGrand").onclick=()=>saveSite({grandOpening:{enabled:$("grandEnabled").checked,video:$("grandVideo").value.trim(),display:$("grandDisplay").value}},"grandOpening");
 $("saveStory").onclick=()=>saveSite({story:{visible:$("storyVisible").checked,heading:$("storyHeading").value.trim(),text:$("storyText").value.trim()}},"story");
 $("saveContact").onclick=()=>saveSite({contact:{visible:$("contactVisible").checked,phone:$("phone").value.trim(),email:$("contactEmail").value.trim(),whatsapp:$("whatsapp").value.trim()}},"contact");
