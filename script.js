@@ -233,13 +233,15 @@ document.addEventListener('DOMContentLoaded', function () {
     currentConfig = {...currentConfig, ...config};
 
     // Update sections visibility
-    Object.keys(currentConfig.sections).forEach(sectionId => {
-      const visible = currentConfig.sections[sectionId];
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.style.display = visible ? '' : 'none';
-      }
-    });
+    if (currentConfig.sections && typeof currentConfig.sections === 'object') {
+      Object.keys(currentConfig.sections).forEach(sectionId => {
+        const visible = currentConfig.sections[sectionId];
+        const el = document.getElementById(sectionId);
+        if (el) {
+          el.style.display = visible ? '' : 'none';
+        }
+      });
+    }
     // Also handle grandOpening container (intro) based on enabled flag
     // Only modify if element still exists in DOM (might have been removed)
     if (intro && intro.parentElement) {
