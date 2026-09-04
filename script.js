@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // References
   const configRef = doc(db, "siteConfig", "public");
-  const menuQuery = query(collection(db, "menuItems"), where("visible", "==", true), orderBy("sortOrder"));
+  const menuQuery = query(collection(db, "menuItems"), where("visible", "==", true));
 
   // State to hold current config
   let currentConfig = {
@@ -306,46 +306,55 @@ document.addEventListener('DOMContentLoaded', function () {
     // TODO
   }
 
-  // Render menu items from snapshot
-  function renderMenuItems(snapshot) {
-    const menuGrid = document.getElementById('menu-items-grid');
-    if (!menuGrid) return;
-
-    // FIX #3: if Firestore returns zero visible menu items, keep the static
-    // fallback cards already in the HTML instead of wiping them out.
-    if (snapshot.empty) {
-      console.log('Menu items: Firestore snapshot empty, keeping static fallback menu');
-      return;
-    }
-
-    menuGrid.innerHTML = '';
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const itemEl = document.createElement('article');
-      itemEl.className = 'menu-item-card';
-      itemEl.dataset.category = data.category || 'all';
-      itemEl.innerHTML = `
-        <div class="menu-item-wrapper">
-          <img src="${data.imageUrl || './photos/site/logo.png'}" alt="" loading="lazy">
-          <div class="menu-item-content">
-            <div class="menu-item-header">
-              <h3>${data.name || 'Unnamed'}</h3>
-              <span class="menu-item-price">${data.price || ''}</span>
-            </div>
-            <p class="menu-item-ingredients">${data.description || ''}</p>
-          </div>
-        </div>
-      `;
-      menuGrid.appendChild(itemEl);
-    });
-    // Update empty state based on whether any items after filtering? We'll rely on tab filtering.
-    // We'll trigger applyFilter for current active tab to show empty state if needed.
-    const activeTab = document.querySelector('.menu-tab.active');
-    if (activeTab) {
-      applyFilter(activeTab.getAttribute('data-filter'));
-    }
   }
-
+    // Render menu items from snapshot
+    function renderMenuItems(snapshot) {
+      const menuGrid = document.getElementById('menu-items-grid');
+      if (!menuGrid) return;
+    
+      // FIX #3: if Firestore returns zero visible menu items, keep the static
+      // fallback cards already in the HTML instead of wiping them out.
+      if (snapshot.empty) {
+        console.log('Menu items: Firestore snapshot empty, keeping static fallback menu');
+        return;
+      }
+    
+      menuGrid.innerHTML = '';
+    
+      // Convert snapshot to array and sort by sortOrder
+      const docs = snapshot.docs;
+      docs.sort((a, b) => {
+        const aVal = a.data().sortOrder || 0;
+        const bVal = b.data().sortOrder || 0;
+        return aVal - bVal;
+      });
+    
+      docs.forEach(doc => {
+        const data = doc.data();
+        const itemEl = document.createElement('article');
+        itemEl.className = 'menu-item-card';
+        itemEl.dataset.category = data.category || 'all';
+        itemEl.innerHTML = `
+          <div class="menu-item-wrapper">
+            <img src="${data.imageUrl || './photos/site/logo.png'}" alt="" loading="lazy">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3>${data.name || 'Unnamed'}</h3>
+                <span class="menu-item-price">${data.price || ''}</span>
+              </div>
+              <p class="menu-item-ingredients">${data.description || ''}</p>
+            </div>
+          `);
+        menuGrid.appendChild(itemEl);
+      });
+    
+      // Update empty state based on whether any items after filtering? We'll rely on tab filtering.
+      // We'll trigger applyFilter for current active tab to show empty state if needed.
+      const activeTab = document.querySelector('.menu-tab.active');
+      if (activeTab) {
+        applyFilter(activeTab.getAttribute('data-filter'));
+      }
+    }
   // Set up real-time listeners
   // Config listener
   onSnapshot(configRef, (docSnap) => {
