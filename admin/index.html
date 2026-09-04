@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Security-Policy"
 content="
   default-src 'self';
-  script-src 'self' https://www.gstatic.com;
+  script-src 'self' https://www.gstatic.com 'unsafe-inline';
   connect-src 'self'
     https://*.googleapis.com
     https://*.firebaseio.com
@@ -17,7 +17,7 @@ content="
     https://firebaselogging.googleapis.com
     https://www.gstatic.com;
   img-src 'self' https: data:;
-  style-src 'self' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   frame-ancestors 'none';
   base-uri 'self';
   form-action 'self';
