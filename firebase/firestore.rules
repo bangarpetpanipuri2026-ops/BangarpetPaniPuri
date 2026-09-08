@@ -10,7 +10,8 @@ service cloud.firestore {
     function isAdmin() {
       return signedIn() &&
         request.auth.uid in [
-          "REPLACE_WITH_ADMIN_UID"
+          "EDL44iDNkUVt6irhEY1aftwQoig1"
+        ];
         ];
     }
 

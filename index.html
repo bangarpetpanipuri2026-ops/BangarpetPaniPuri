@@ -205,9 +205,21 @@
     <div class="container footer-wrap">
       <div class="footer-links"><a href="#menu">Menu</a><a href="#story">Our Story</a><a href="#contact">Contact</a></div>
       <p class="copyright">© <span id="year"></span> Bangarpet PaniPuri RTG</p>
+      <a id="admin-login-link"
+         href="admin/index.html"
+         class="admin-link"
+         style="display:none; margin-top:12px; font-size:12px; color:#fff; text-decoration:underline;">
+        Admin login
+      </a>
     </div>
   </footer>
 
   <script src="script.js" type="module"></script>
+  <script>
+    // Show the admin link only if the URL contains ?admin=1
+    if (window.location.search.includes('admin=1')) {
+      document.getElementById('admin-login-link').style.display = 'block';
+    }
+  </script>
 </body>
 </html>
