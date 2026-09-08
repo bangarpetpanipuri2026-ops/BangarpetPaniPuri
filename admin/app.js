@@ -245,11 +245,11 @@ function openMenuModal(item = null, id = null) {
             id="menuImage"
             type="text"
             maxlength="300"
-            placeholder="/photos/Bhel%20Puri.png"
+            placeholder="/photos/Bhel Puri.png"
             value="${esc(item?.imageUrl || "")}"
           >
           <small class="muted">
-            Example: /photos/Bhel%20Puri.png
+            Example: /photos/Bhel Puri.png
           </small>
         </label>
 
