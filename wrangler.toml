@@ -1,0 +1,9 @@
+# wrangler.toml
+name = "bangarpet-panipuri"
+compatibility_date = "2026-09-08"
+
+[build]
+  # Run our Node script before publishing
+  command = "node replace-firebase-config.js"
+  # The folder that Cloudflare Pages will serve
+  publish_dir = "dist"
