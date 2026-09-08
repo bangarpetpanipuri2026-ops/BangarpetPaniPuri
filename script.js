@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const storyHeading = document.getElementById('story-title');
     const storyText = document.querySelector('#story .story-copy p');
     if (storyImg) {
-      storyImg.src = currentConfig.story.imageUrl || './photos/site/ourstory.png';
+      storyImg.src = currentConfig.story.imageUrl || './photos/menu/ourstory.png';
     }
     if (storyHeading) {
       storyHeading.textContent = currentConfig.story.heading || '';
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
         itemEl.dataset.category = data.category || 'all';
         itemEl.innerHTML = `
           <div class="menu-item-wrapper">
-            <img src="${data.imageUrl || './photos/site/logo.png'}" alt="" loading="lazy">
+            <img src="${data.imageUrl || './photos/menu/logo.png'}" alt="" loading="lazy">
             <div class="menu-item-content">
               <div class="menu-item-header">
                 <h3>${data.name || 'Unnamed'}</h3>
