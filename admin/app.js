@@ -9,14 +9,14 @@ import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, query, 
   3. Admin authorization is enforced by Firestore rules, not this UI.
   4. Never put a GitHub PAT, service-account JSON, or Firebase Admin SDK credential here.
 */
-// ---- REPLACE THIS BLOCK THIS BLOCK ----
+// Firebase configuration (same as admin)
 const firebaseConfig = {
-  apiKey: "__FIREBASE_API_KEY__",
-  authDomain: "__FIREBASE_AUTH_DOMAIN__",
-  projectId: "__FIREBASE_PROJECT_ID__",
-  storageBucket: "__FIREBASE_STORAGE_BUCKET__",
-  messagingSenderId: "__FIREBASE_MESSAGING_SENDER_ID__",
-  appId: "__FIREBASE_APP_ID__"
+  apiKey: "AIzaSyDElY-ymgLDDpsLCmwP_nArVq3cZVcD-VU",
+  authDomain: "fir-project-ad1c8.firebaseapp.com",
+  projectId: "fir-project-ad1c8",
+  storageBucket: "fir-project-ad1c8.firebasestorage.app",
+  messagingSenderId: "726974224635",
+  appId: "1:726974224635:web:eba30088877932befa785e"
 };
 // ---------------------------
 

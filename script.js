@@ -3,16 +3,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/fireba
 import { getFirestore, doc, getDoc, collection, query, orderBy, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 // Firebase configuration (same as admin)
-// ---- REPLACE THIS BLOCK ----
 const firebaseConfig = {
-  apiKey: "__FIREBASE_API_KEY__",
-  authDomain: "__FIREBASE_AUTH_DOMAIN__",
-  projectId: "__FIREBASE_PROJECT_ID__",
-  storageBucket: "__FIREBASE_STORAGE_BUCKET__",
-  messagingSenderId: "__FIREBASE_MESSAGING_SENDER_ID__",
-  appId: "__FIREBASE_APP_ID__"
+  apiKey: "AIzaSyDElY-ymgLDDpsLCmwP_nArVq3cZVcD-VU",
+  authDomain: "fir-project-ad1c8.firebaseapp.com",
+  projectId: "fir-project-ad1c8",
+  storageBucket: "fir-project-ad1c8.firebasestorage.app",
+  messagingSenderId: "726974224635",
+  appId: "1:726974224635:web:eba30088877932befa785e"
 };
-// ---------------------------
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
